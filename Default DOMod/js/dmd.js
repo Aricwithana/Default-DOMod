@@ -6,7 +6,8 @@ document.addEventListener('deviceready', onload, false);
 function onload(){
     document.addEventListener("pause", onPause, false);
     document.addEventListener("resume", onResume, false);
-    window.installedapps.getIcons({success:function(returnVal){ window.installedapps.getApps({success:generateApps}); }}); 
+    document.addEventListener("menubutton", toggleSidebar, false);
+    appsIconCheck();
     window.cellsignal.enable({callback:'cellularSignal'});
     window.missedcomm.calls({callback:'missedCalls', timing:5000, flag:'enable'});
     window.missedcomm.sms({callback:'missedSMS', timing:5000, flag:'enable'});
@@ -33,6 +34,19 @@ function setNewDMD(){
 }
 
 
+//To gen or not to gen icons.
+function appsIconCheck(){
+    window.requestFileSystem(window.TEMPORARY, 1024*1024, function(fs) {
+        fs.root.getDirectory('/data/data/com.awaa.domlauncher/icons', {create: false}, 
+            function(dirEntry) {
+                window.installedapps.getApps({success:generateApps});
+            }, 
+            function(){
+                window.installedapps.getIcons({success:generateApps});
+            });
+    }, null);
+}
+
 //Missed Communications
 function missedCalls(returnVal){
     missedCallsVal = returnVal;
@@ -54,10 +68,11 @@ function missedSMS(returnVal){
 function generateApps(returnVal){
     var appListArray = JSON.parse(returnVal.returnVal);
     appListArray.sort(compare);
-    $('#appPanel').empty().append('<a href="tel:" class="app flex" data-appname="Dialer"><img src="file:///android_asset/www/images/icon_Dialer.png"></a>');
+    $('#appPanel').empty();
     $(appListArray).each(function(){
         $(appPanel).append('<div class="app flex" data-appName="'+this.name+'" data-appPackage="'+this.package+'"  data-appPackage="'+this.activity+'"><img src="'+this.path+'"</div>');
     });
+    $('#appPanel').append('<div id="appPanelRefresh"><span>&lt;refresh&gt;</span></div>');
 }
 
 
@@ -68,8 +83,14 @@ $(document).on('tap', '.app', function(){
     window.launch.app({package:pkg, activity:act});
 });
 
+//Refresh Apps
+$(document).on('tap', '#appPanelRefresh span', function(){
+    window.installedapps.getIcons({success:generateApps});
+});
+
+
 //Toggle Side Menu
-$(document).on('tap', '#mobileMenuToggle', toggleSidebar);
+$(document).on('tap', '#mobileMenuToggle, .logo, .sidebarActive #contentPanels', toggleSidebar);
 
 function toggleSidebar(){
     if($('html').hasClass('sidebarActive ')){
