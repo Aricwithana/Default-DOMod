@@ -128,15 +128,13 @@ function preventLabelDoubleEvent(event){
 }
 
 //Fullscreen Controls
-$('#toggleFullscreen').on('tap', toggleFullscreen);
+$('#toggleFullscreen').on('tap', function(){window.statusbar.toggle({success:toggleFullscreen})});
 
-function toggleFullscreen(){              
-    if (StatusBar.isVisible) {
-        $('#toggleFullscreen').find('input').prop('checked', true); 
-        StatusBar.hide();
-    }else{
+function toggleFullscreen(returnVal){              
+    if (returnVal.returnVal) {
         $('#toggleFullscreen').find('input').prop('checked', false);
-        StatusBar.show();
+    }else{
+        $('#toggleFullscreen').find('input').prop('checked', true);
     }     
 }
 
@@ -306,14 +304,13 @@ function domlChecks(){
     window.mobiledata.check({success:toggleData});
     window.wificontrols.check({callback:'wifiSignal', success:toggleWifi});
     
-    if (StatusBar.isVisible) {
-        $('#toggleFullscreen').find('input').prop('checked', false); 
-    }else{
-        $('#toggleFullscreen').find('input').prop('checked', true); 
-    }
-    
-    //var orientation = screen.orientation; 
-    //alert(orientation);
+    window.statusbar.check({success:function(returnVal){   
+        if (returnVal.returnVal) {
+            $('#toggleFullscreen').find('input').prop('checked', false); 
+        }else{
+            $('#toggleFullscreen').find('input').prop('checked', true); 
+        }
+    }});
 }
 
 
