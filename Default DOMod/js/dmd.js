@@ -3,26 +3,14 @@ var missedSMSVal = 0;
 
 document.addEventListener('deviceready', onload, false);
 
-var loadCheckTimer = setInterval(loadCheck, 10000);
-
-function loadCheck(check){
-    if(check != true){
-        location.reload();             
-    }else{
-        clearInterval(loadCheckTimer);
-        loadCheckTimer = null;            
-    } 
-}
-
 function onload(){
-    loadCheck(true);
     document.addEventListener("pause", onPause, false);
     document.addEventListener("resume", onResume, false);
     document.addEventListener("menubutton", toggleSidebar, false);
     appsIconCheck();
     window.cellsignal.enable({callback:'cellularSignal'});
-    window.missedcomm.calls({callback:'missedCalls', timing:5000, flag:'enable'});
-    window.missedcomm.sms({callback:'missedSMS', timing:5000, flag:'enable'});
+    //window.missedcomm.calls({callback:'missedCalls', timing:5000, flag:'enable'});
+    //window.missedcomm.sms({callback:'missedSMS', timing:5000, flag:'enable'});
     window.doml.getDMD({success:loadDMD});
     domlChecks();
 }
@@ -42,8 +30,8 @@ function loadDMD(returnVal){
 
 function setNewDMD(){
     window.wificontrols.stop({});
-    window.missedcomm.sms({flag:'disable'});
-    window.missedcomm.calls({flag:'disable'});
+    //window.missedcomm.sms({flag:'disable'});
+    //window.missedcomm.calls({flag:'disable'});
     window.cellsignal.disable({});
     cordova.exec(null, null, "Battery", "stop", []);
     
@@ -306,8 +294,8 @@ function ringerModeCheck(returnVal){
 
 //Sets-Updates System Panel
 function domlChecks(){
-    window.missedcomm.check({callback:'missedCalls', flag:'calls'});
-    window.missedcomm.check({callback:'missedSMS', flag:'sms'});
+    //window.missedcomm.check({callback:'missedCalls', flag:'calls'});
+    //window.missedcomm.check({callback:'missedSMS', flag:'sms'});
     window.volumecontrols.check({stream:'ringer', success:setVolVal});
     window.volumecontrols.check({stream:'media', success:setMediaVal});
     window.brightnesscontrols.check({flag:'value', success:setBrightVal});
